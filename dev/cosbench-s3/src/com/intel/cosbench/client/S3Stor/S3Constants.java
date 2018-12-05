@@ -19,16 +19,22 @@ public interface S3Constants {
 
     String AUTH_USERNAME_KEY = "accesskey";
     String AUTH_USERNAME_DEFAULT = "";
-    
+
     String AUTH_PASSWORD_KEY = "secretkey";
     String AUTH_PASSWORD_DEFAULT = "";
     
     // --------------------------------------------------------------------------
+    // SIGNER TYPES
+    // --------------------------------------------------------------------------
+    String SIGNER_OVERRIDE_KEY = "signer_override";
+    String SIGNER_OVERRIDE_DEFAULT = "";
+
+    // --------------------------------------------------------------------------
     // CLIENT CONFIGURATION
     // --------------------------------------------------------------------------
     String PROXY_HOST_KEY = "proxyhost";
-    String PROXY_PORT_KEY = "proxyport";    
-    
+    String PROXY_PORT_KEY = "proxyport";
+
     // --------------------------------------------------------------------------
     // PATH STYLE ACCESS
     // --------------------------------------------------------------------------
