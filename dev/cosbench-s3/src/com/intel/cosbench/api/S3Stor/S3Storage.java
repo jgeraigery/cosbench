@@ -48,57 +48,27 @@ public class S3Storage extends NoneStorage {
     	parms.put(PATH_STYLE_ACCESS_KEY, pathStyleAccess);
     	parms.put(PROXY_HOST_KEY, proxyHost);
     	parms.put(PROXY_PORT_KEY, proxyPort);
-        initClient();
-    }
 
-    private AmazonS3 initClient() {
-        logger.debug("initialize S3 client with storage config: {}", parms);
-        String proxyHost = parms.getStr(PROXY_HOST_KEY);
-        String proxyPort = parms.getStr(PROXY_PORT_KEY);
-        //String signerOverride = parms.getStr(SIGNER_OVERRIDE_KEY);
-        String signerType = getSignerType(parms.getStr(SIGNER_OVERRIDE_KEY));
-
+        logger.debug("using storage config: {}", parms);
+        
         ClientConfiguration clientConf = new ClientConfiguration();
-        clientConf.setConnectionTimeout(parms.getInt(CONN_TIMEOUT_KEY));
-        if ((!proxyHost.equals("")) && (!proxyPort.equals(""))) {
-            clientConf.setProxyHost(proxyHost);
-            clientConf.setProxyPort(Integer.parseInt(proxyPort));
-        }
+        clientConf.setConnectionTimeout(timeout);
+        clientConf.setSocketTimeout(timeout);
         clientConf.withUseExpectContinue(false);
-        clientConf.withSignerOverride(signerType);
-
+        clientConf.withSignerOverride("S3SignerType");
+//        clientConf.setProtocol(Protocol.HTTP);
+		if((!proxyHost.equals(""))&&(!proxyPort.equals(""))){
+			clientConf.setProxyHost(proxyHost);
+			clientConf.setProxyPort(Integer.parseInt(proxyPort));
+		}
+        
         AWSCredentials myCredentials = new BasicAWSCredentials(accessKey, secretKey);
         client = new AmazonS3Client(myCredentials, clientConf);
         client.setEndpoint(endpoint);
-        client.setS3ClientOptions(new S3ClientOptions()
-                .withPathStyleAccess(parms.getBoolean(PATH_STYLE_ACCESS_KEY)));
-
-        logger.debug("S3 Client has been intitialized");
-        return client;
+        client.setS3ClientOptions(new S3ClientOptions().withPathStyleAccess(pathStyleAccess));
+        
+        logger.debug("S3 client has been initialized");
     }
-
-    private String getSignerType(String signerOverride) {
-    	String signerType = "";
-    	
-    	// Configure Signer Type
-        if (signerOverride.isEmpty()) {
-        	signerType = "AWS4SignerType";
-        } else if (signerOverride.equalsIgnoreCase("V3")){
-        	signerType = "AWS3SignerType";
-        } else if (signerOverride.equalsIgnoreCase("V4")){
-        	signerType = "AWS4SignerType";
-        } else if (signerOverride.equalsIgnorecase("S3V4")) {
-        	signerType = "AWSS3V4SignerType";
-        } else if (signerOverride.equalsIgnoreCase("NoOp")){
-        	signerType = "NoOpSignerType";
-        } else if (signerOverride.equalsIgnoreCase("V4Unsigned")){
-        	signerType = "AWS4UnsignedPayloadSignerType";
-        } else {
-        	signerType = "AWS4SignerType";
-        }
-        return signerType;
-    }
-
     
     @Override
     public void setAuthContext(AuthContext info) {
