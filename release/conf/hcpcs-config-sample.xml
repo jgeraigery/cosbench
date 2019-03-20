@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<workload name="hcpcs-sample" description="Sample benchmark for HCP for Cloud Scale">
+
+<!-- 
+HCPCS config options - defaults are those set by HCPCS storage, all other are default values set by
+AWS S3 Java SDK.
+name            type      required description
+endpoint        url       yes      Endpoint for S3 operations
+accessKey       string    yes      Access key for V4 signing
+secretKey       string    yes      Access secret key for V4 signing
+proxyHost       string    no       Proxy IP or hostname
+proxyPort       integer   no       Poxy port
+connTTL         integer   no       Pooled connection expiration time (milliseconds)
+connTimeout     integer   no       Initial connection timeout (milliseconds)
+requestTimeout  integer   no       Complete requestion timeout (milliseconds)
+pathStyleAccess boolean   no       Use path style S3 access (default: true)
+region          string    no       Region to use for V4 signing (default: us-east-1)
+insecure        boolean   no       Disable check for valid cerficiates (default: true)
+md5Disable      boolean   no       Disable MD5 (etag) check on put/get (default: false)
+maxConn         integer   no       Maximum connections (default: 4096)
+maxErrorRetry   integer   no       Maximum SDK retries on error (default: 0)
+resolver        string    no       Type of resolver to use (defalult: static)
+marathonUrl     url       no       Endpoint for marathon if using marathon resolver
+
+NOTE:
+Resolver resolves all IPs for the hostname in the endpoint and then fed to the SDK in a round-robin
+manner to provide a simple load balancing.
+static   - resolve all ips for the hostname once
+dynamic  - resovle all ips for the hostname every 30s
+marathon - resolve all ips for HCPCS S3 gatweay using Marathon every 30s
+
+
+-->
+  <storage type="hcpcs" config="endpoint=https://myHCPCS.example.com;accessKey=admin;secretKey=password" />
+
+  <workflow>
+
+	<workstage name="create-bucket">
+		<work type="init" workers="1" config="cprefix=ns;containers=r(1,1)" />
+	</workstage>
+
+	<workstage name="create-10k-4kb-files">
+		<work name="main" type="normal" interval="10" division="object" rampup="0" rampdown="0" workers="50" totalOps="10000">
+			<operation type="write" config="cprefix=ns; containers=c(1); oprefix=cos_; objects=r(1,10000); sizes=c(4)KB" />
+		</work>
+	</workstage>
+
+	<workstage name="read-10k-4kb-files">
+		<work name="main" type="normal" interval="10" division="object" rampup="0" rampdown="0" workers="50" totalOps="10000">
+			<operation type="read" config="cprefix=ns; containers=c(1); oprefix=cos_; objects=r(1,10000)" />
+		</work>
+	</workstage>
+
+  </workflow>
+
+</workload>

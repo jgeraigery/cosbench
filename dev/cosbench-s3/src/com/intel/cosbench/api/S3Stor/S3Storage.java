@@ -37,7 +37,10 @@ public class S3Storage extends NoneStorage {
         accessKey = config.get(AUTH_USERNAME_KEY, AUTH_USERNAME_DEFAULT);
         secretKey = config.get(AUTH_PASSWORD_KEY, AUTH_PASSWORD_DEFAULT);
 
+        String signerType = config.get(SIGNER_OVERRIDE_KEY, SIGNER_OVERRIDE_DEFAULT);
         boolean pathStyleAccess = config.getBoolean(PATH_STYLE_ACCESS_KEY, PATH_STYLE_ACCESS_DEFAULT);
+        boolean certCheck = config.getBoolean(NO_CERT_CHECK_KEY, NO_CERT_CHECK_DEFAULT);
+        boolean hashCheck = config.getBoolean(HASH_CHECK_KEY, HASH_CHECK_DEFAULT);
         
 		String proxyHost = config.get(PROXY_HOST_KEY, "");
 		String proxyPort = config.get(PROXY_PORT_KEY, "");
@@ -46,16 +49,23 @@ public class S3Storage extends NoneStorage {
     	parms.put(AUTH_USERNAME_KEY, accessKey);
     	parms.put(AUTH_PASSWORD_KEY, secretKey);
     	parms.put(PATH_STYLE_ACCESS_KEY, pathStyleAccess);
+    	parms.put(SIGNER_OVERRIDE_KEY, signerType);
     	parms.put(PROXY_HOST_KEY, proxyHost);
     	parms.put(PROXY_PORT_KEY, proxyPort);
-
+    	parms.put(NO_CERT_CHECK_KEY, certCheck);
+    	parms.put(HASH_CHECK_KEY, hashCheck);
+    	
         logger.debug("using storage config: {}", parms);
         
+        System.setProperty(SDKGlobalConfiguration.DISABLE_CERT_CHECKING_SYSTEM_PROPERTY, Boolean.toString(certCheck));
+        if(!hashCheck) {
+        	System.setProperty("com.amazonaws.services.s3.disableGetObjectMD5Validation", Boolean.toString(!hashCheck));
+        }
         ClientConfiguration clientConf = new ClientConfiguration();
         clientConf.setConnectionTimeout(timeout);
         clientConf.setSocketTimeout(timeout);
         clientConf.withUseExpectContinue(false);
-        clientConf.withSignerOverride("S3SignerType");
+        clientConf.withSignerOverride(signerType);
 //        clientConf.setProtocol(Protocol.HTTP);
 		if((!proxyHost.equals(""))&&(!proxyPort.equals(""))){
 			clientConf.setProxyHost(proxyHost);

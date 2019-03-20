@@ -21,28 +21,31 @@ then
         exit -1
 fi
 
+ARTIFACT_DIR="artifact/$1"
+
 echo "Build up main structure"
-mkdir $1
 
-cp -f -R release/* $1/
-cp -f -R dist/* $1/
+mkdir -p "$ARTIFACT_DIR"
 
-cp -f LICENSE $1/
-cp -f NOTICE $1/
-cp -f VERSION $1/
+cp -f -R release/* "$ARTIFACT_DIR"/
+cp -f -R dist/* "$ARTIFACT_DIR"/
 
-cp -f README.md $1/
-cp -f BUILD.md $1/
+cp -f LICENSE "$ARTIFACT_DIR"/
+cp -f NOTICE "$ARTIFACT_DIR"/
+cp -f VERSION "$ARTIFACT_DIR"/
 
-cp -f CHANGELOG $1/
-cp -f TODO.md $1/
+cp -f README.md "$ARTIFACT_DIR"/
+cp -f BUILD.md "$ARTIFACT_DIR"/
 
-cp -f COSBenchUserGuide.pdf $1/
-cp -f COSBenchAdaptorDevGuide.pdf $1/
-cp -f 3rd-party-licenses.pdf $1/
-cp -f pkg.lst $1/
+cp -f CHANGELOG "$ARTIFACT_DIR"/
+cp -f TODO.md "$ARTIFACT_DIR"/
+
+cp -f COSBenchUserGuide.pdf "$ARTIFACT_DIR"/
+cp -f COSBenchAdaptorDevGuide.pdf "$ARTIFACT_DIR"/
+cp -f 3rd-party-licenses.pdf "$ARTIFACT_DIR"/
+cp -f pkg.lst "$ARTIFACT_DIR"/
 
 
 echo "Build up adaptor example enviornment"
-mkdir $1/ext
-cp -f -R ext/* $1/ext
+mkdir "$ARTIFACT_DIR"/ext
+cp -f -R ext/* "$ARTIFACT_DIR"/ext
