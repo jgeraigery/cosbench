@@ -25,26 +25,28 @@ if "%1_" == "_" (
 )
 
 echo "Build up main structure"
-mkdir %1
+SET ARTIFACT_DIR=artifact/%1
+mkdir artifact
+mkdir %ARTIFACT_DIR%
 
-xcopy /Y /E release\* %1\
-xcopy /Y /E dist\* %1\
+xcopy /Y /E release\* %ARTIFACT_DIR%\
+xcopy /Y /E dist\* %ARTIFACT_DIR%\
 
-xcopy /Y LICENSE %1
-xcopy /Y NOTICE %1
-xcopy /Y VERSION %1
+xcopy /Y LICENSE %ARTIFACT_DIR%
+xcopy /Y NOTICE %ARTIFACT_DIR%
+xcopy /Y VERSION %ARTIFACT_DIR%
 
-xcopy /Y README.md %1
-xcopy /Y BUILD.md %1
+xcopy /Y README.md %ARTIFACT_DIR%
+xcopy /Y BUILD.md %ARTIFACT_DIR%
 
-xcopy /Y CHANGELOG %1
-xcopy /Y TODO.md %1
+xcopy /Y CHANGELOG %ARTIFACT_DIR%
+xcopy /Y TODO.md %ARTIFACT_DIR%
 
-xcopy /Y COSBenchUserGuide.pdf %1
-xcopy /Y COSBenchAdaptorDevGuide.pdf %1
-xcopy /Y 3rd-party-licenses.pdf %1
-xcopy /Y pkg.lst %1
+xcopy /Y COSBenchUserGuide.pdf %ARTIFACT_DIR%
+xcopy /Y COSBenchAdaptorDevGuide.pdf %ARTIFACT_DIR%
+xcopy /Y 3rd-party-licenses.pdf %ARTIFACT_DIR%
+xcopy /Y pkg.lst %ARTIFACT_DIR%
 
 echo "Build up adaptor example enviornment"
-xcopy /Y /E ext\* %1\ext\
+xcopy /Y /E ext\* %ARTIFACT_DIR%\ext\
 
